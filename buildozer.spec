@@ -30,8 +30,8 @@ android.archs = arm64-v8a,armeabi-v7a
 # 权限
 android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
 
-# 屏幕方向 (landscape横向, portrait纵向, all自动)
-orientation = all
+# 屏幕方向 (landscape横向, portrait纵向, sensor自动旋转)
+orientation = sensor
 
 # 全屏模式
 fullscreen = 0

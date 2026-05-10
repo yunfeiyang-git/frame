@@ -33,16 +33,12 @@ jobs:
         wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
         unzip -q cmdline-tools.zip
 
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
-        mv cmdline-tools/bin/* /home/runner/.buildozer/android/platform/android-sdk/tools/bin/
-        mv cmdline-tools/lib/* /home/runner/.buildozer/android/platform/android-sdk/tools/bin/ 2>/dev/null || true
-        mv cmdline-tools/*.txt /home/runner/.buildozer/android/platform/android-sdk/tools/bin/ 2>/dev/null || true
-        mv cmdline-tools/*.properties /home/runner/.buildozer/android/platform/android-sdk/tools/bin/ 2>/dev/null || true
-        rm -rf cmdline-tools
-
-        chmod +x /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-        yes | /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-        /home/runner/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+        mkdir -p /home/runner/.buildozer/android/platform/android-sdk
+        rm -rf /home/runner/.buildozer/android/platform/android-sdk/tools
+        mv cmdline-tools /home/runner/.buildozer/android/platform/android-sdk/tools
+        chmod +x /home/runner/.buildozer/android/platform/android-sdk/tools/cmdline-tools/latest/bin/sdkmanager
+        yes | /home/runner/.buildozer/android/platform/android-sdk/tools/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+        /home/runner/.buildozer/android/platform/android-sdk/tools/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
     - name: Build with Buildozer
       env:

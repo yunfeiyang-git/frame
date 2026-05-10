@@ -27,15 +27,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev automake libtinfo6
 
-    - name: Build with Buildozer
-      env:
-        ANDROIDSDK: /usr/local/lib/android/sdk
-        ANDROIDNDK: /usr/local/lib/android/sdk/ndk-bundle
-        ANDROIDNDKVER: 25b
-        ANDROIDAPI: 31
+    - name: Create symlink for Buildozer
       run: |
-        ls -la /usr/local/lib/android/sdk/
-        ls -la /usr/local/lib/android/sdk/build-tools/ 2>/dev/null || echo "No build-tools"
+        mkdir -p /home/runner/.buildozer/android/platform
+        rm -rf /home/runner/.buildozer/android/platform/android-sdk
+        ln -s /usr/local/lib/android/sdk /home/runner/.buildozer/android/platform/android-sdk
+        echo "SDK symlink created"
+        ls -la /home/runner/.buildozer/android/platform/
+        ls -la /usr/local/lib/android/sdk/build-tools/ 2>/dev/null || echo "No build-tools in SDK"
+
+    - name: Build with Buildozer
+      run: |
         buildozer -v android debug
 
     - name: Upload APK artifact

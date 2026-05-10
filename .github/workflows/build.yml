@@ -41,6 +41,7 @@ jobs:
         ANDROIDNDK: /usr/local/lib/android/sdk/ndk-bundle
         ANDROIDNDKVER: 25b
         ANDROIDAPI: 31
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       run: |
         ls -la /usr/local/lib/android/sdk/
         ls -la /usr/local/lib/android/sdk/build-tools/ 2>/dev/null || echo "No build-tools"

@@ -27,33 +27,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev automake libtinfo6
 
+    - name: Make prepare_sdk.sh executable
+      run: |
+        chmod +x prepare_sdk.sh
+
     - name: Prepare Android SDK for Buildozer
       run: |
-        mkdir -p /home/runner/.buildozer/android/platform
-        rm -rf /home/runner/.buildozer/android/platform/android-sdk
-        ln -s /usr/local/lib/android/sdk /home/runner/.buildozer/android/platform/android-sdk
-        
-        # Create tools/bin directory with compatibility
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/tools/bin
-        cd /home/runner/.buildozer/android/platform/android-sdk/tools/bin
-        
-        # Create sdkmanager wrapper
-        cat > sdkmanager << 'EOF'
-#!/bin/bash
-cd /usr/local/lib/android/sdk/cmdline-tools/latest/bin
-./sdkmanager --sdk_root=/home/runner/.buildozer/android/platform/android-sdk "$@"
-EOF
-        chmod +x sdkmanager
-        
-        # Copy other tools if present
-        for tool in adb aidl dx d8; do
-            if [ -f /usr/local/lib/android/sdk/build-tools/*/$tool ]; then
-                cp /usr/local/lib/android/sdk/build-tools/*/$tool . 2>/dev/null || true
-            fi
-        done
-        
-        echo "SDK tools prepared"
-        ls -la /home/runner/.buildozer/android/platform/android-sdk/tools/bin/
+        ./prepare_sdk.sh
 
     - name: Build with Buildozer
       run: |

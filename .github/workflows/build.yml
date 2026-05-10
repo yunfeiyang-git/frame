@@ -22,24 +22,11 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
-
-    - name: Install build-tools
-      run: |
-        if [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "build-tools;34.0.0" "platforms;android-34" "platform-tools" > /dev/null 2>&1 || true
-        elif [ -d "$ANDROID_HOME/tools/bin" ]; then
-          yes | $ANDROID_HOME/tools/bin/sdkmanager --install "build-tools;34.0.0" "platforms;android-34" "platform-tools" > /dev/null 2>&1 || true
-        fi
-
-    - name: Create symlink for Buildozer
-      run: |
-        mkdir -p /home/runner/.buildozer/android/platform
-        if [ -d "$ANDROID_HOME" ] && [ ! -d "/home/runner/.buildozer/android/platform/android-sdk" ]; then
-          ln -s "$ANDROID_HOME" /home/runner/.buildozer/android/platform/android-sdk
-          echo "Created symlink from $ANDROID_HOME to /home/runner/.buildozer/android/platform/android-sdk"
-        fi
-        ls -la /home/runner/.buildozer/android/platform/
-        ls -la /home/runner/.buildozer/android/platform/android-sdk/
+      with:
+        packages: |
+          build-tools;34.0.0
+          platforms;android-34
+          platform-tools
 
     - name: Install dependencies
       run: |
@@ -50,13 +37,13 @@ jobs:
 
     - name: Build with Buildozer
       env:
-        ANDROIDSDK: $ANDROID_HOME
-        ANDROIDNDK: /home/runner/.buildozer/android/platform/android-ndk
+        ANDROIDSDK: /usr/local/lib/android/sdk
+        ANDROIDNDK: /usr/local/lib/android/sdk/ndk-bundle
         ANDROIDNDKVER: 25b
         ANDROIDAPI: 31
       run: |
-        ls -la
-        pwd
+        ls -la /usr/local/lib/android/sdk/
+        ls -la /usr/local/lib/android/sdk/build-tools/ 2>/dev/null || echo "No build-tools"
         buildozer -v android debug
 
     - name: Upload APK artifact

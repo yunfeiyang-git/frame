@@ -29,12 +29,15 @@ jobs:
     
     - name: Build with Buildozer
       run: |
-        cd 幻灯片播放器
+        find . -type d -name "*幻灯片*" -exec mv {} slideshow_player \; || true
+        ls -la
+        cd slideshow_player || cd "幻灯片播放器"
+        pwd
         buildozer -v android debug
     
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
         name: slideshow-player-apk
-        path: 幻灯片播放器/bin/*.apk
+        path: **/bin/*.apk
         retention-days: 30

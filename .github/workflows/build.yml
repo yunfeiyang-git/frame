@@ -29,11 +29,7 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        if [ -d "幻灯片播放器" ]; then
-          mv "幻灯片播放器" slideshow_player
-        fi
         ls -la
-        cd slideshow_player
         pwd
         buildozer -v android debug
 
@@ -41,5 +37,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: slideshow-player-apk
-        path: slideshow_player/bin/*.apk
+        path: bin/*.apk
         retention-days: 30

@@ -26,12 +26,20 @@ jobs:
     - name: Install build-tools
       run: |
         if [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "build-tools;34.0.0" "platforms;android-34" > /dev/null 2>&1 || true
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "build-tools;34.0.0" "platforms;android-34" "platform-tools" > /dev/null 2>&1 || true
         elif [ -d "$ANDROID_HOME/tools/bin" ]; then
-          yes | $ANDROID_HOME/tools/bin/sdkmanager --install "build-tools;34.0.0" "platforms;android-34" > /dev/null 2>&1 || true
+          yes | $ANDROID_HOME/tools/bin/sdkmanager --install "build-tools;34.0.0" "platforms;android-34" "platform-tools" > /dev/null 2>&1 || true
         fi
-        ls -la $ANDROID_HOME/build-tools/ 2>/dev/null || echo "No build-tools found"
-        ls -la $ANDROID_HOME/ 2>/dev/null || echo "No ANDROID_HOME"
+
+    - name: Create symlink for Buildozer
+      run: |
+        mkdir -p /home/runner/.buildozer/android/platform
+        if [ -d "$ANDROID_HOME" ] && [ ! -d "/home/runner/.buildozer/android/platform/android-sdk" ]; then
+          ln -s "$ANDROID_HOME" /home/runner/.buildozer/android/platform/android-sdk
+          echo "Created symlink from $ANDROID_HOME to /home/runner/.buildozer/android/platform/android-sdk"
+        fi
+        ls -la /home/runner/.buildozer/android/platform/
+        ls -la /home/runner/.buildozer/android/platform/android-sdk/
 
     - name: Install dependencies
       run: |
@@ -42,7 +50,7 @@ jobs:
 
     - name: Build with Buildozer
       env:
-        ANDROIDSDK: /home/runner/.buildozer/android/platform/android-sdk
+        ANDROIDSDK: $ANDROID_HOME
         ANDROIDNDK: /home/runner/.buildozer/android/platform/android-ndk
         ANDROIDNDKVER: 25b
         ANDROIDAPI: 31

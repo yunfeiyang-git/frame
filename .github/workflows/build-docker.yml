@@ -15,50 +15,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v5
 
-    - name: Create build script
-      run: |
-        cat > build_apk.py << 'ENDOFSCRIPT'
-import subprocess
-import os
-
-# 修改 Buildozer 源代码跳过 root 检查
-buildozer_path = '/home/user/.venv/lib/python3.12/site-packages/buildozer/__init__.py'
-with open(buildozer_path, 'r') as f:
-    content = f.read()
-
-# 替换 check_root 方法
-old_code = '''    def check_root(self):
-        if os.geteuid() == 0:
-            self.logger.warning("Buildozer is running as root!")
-            self.logger.warning("This is not recommended, and may lead to problems later.")
-            cont = input('Are you sure you want to continue [y/n]? ')
-            if cont.lower() != 'y':
-                sys.exit(1)'''
-
-new_code = '''    def check_root(self):
-        if os.geteuid() == 0:
-            self.logger.warning("Buildozer is running as root!")
-            self.logger.warning("This is not recommended, and may lead to problems later.")
-            # Auto-accept for CI environment
-            cont = 'y'
-            if cont.lower() != 'y':
-                sys.exit(1)'''
-
-if old_code in content:
-    content = content.replace(old_code, new_code)
-    with open(buildozer_path, 'w') as f:
-        f.write(content)
-    print("Patched buildozer to skip root check")
-else:
-    print("Could not find check_root method")
-
-# Run buildozer
-subprocess.run(['buildozer', 'android', 'debug'], cwd='/home/user/project')
-ENDOFSCRIPT
-
     - name: Build APK with Docker
-      run: |
-        docker run --rm -v "${{ github.workspace }}":/home/user/project kivy/buildozer:latest python /home/user/project/build_apk.py
+      run: docker run --rm -v "${{ github.workspace }}":/home/user/project kivy/buildozer:latest python /home/user/project/build_apk.py
 
     - name: List files
       run: |

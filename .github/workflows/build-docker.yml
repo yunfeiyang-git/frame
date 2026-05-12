@@ -15,18 +15,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v5
 
-    - name: Create build script
-      run: |
-        cat > build_apk.sh << 'EOF'
-#!/bin/bash
-cd /home/user/project
-echo "y" | buildozer android debug
-EOF
-        chmod +x build_apk.sh
-
     - name: Build APK with Docker
-      run: |
-        docker run --rm -v $(pwd):/home/user/project kivy/buildozer:latest /home/user/project/build_apk.sh
+      run: docker run --rm -v "${{ github.workspace }}":/home/user/project kivy/buildozer:latest buildozer android debug < /dev/null
 
     - name: List files
       run: |

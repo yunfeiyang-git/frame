@@ -18,10 +18,29 @@ jobs:
     - name: Build APK with Docker
       run: |
         docker run --rm -v "${{ github.workspace }}":/home/user/project kivy/buildozer:latest /bin/bash -c "
-          # 直接修改 buildozer 源代码
-          sed -i \"s|cont = input('Are you sure you want to continue \\[y/n\\]? ')||g\" /home/user/.venv/lib/python3.12/site-packages/buildozer/__init__.py
-          sed -i \"s|if cont.lower() != 'y':|cont = 'y'\\n        if cont.lower() != 'y':|g\" /home/user/.venv/lib/python3.12/site-packages/buildozer/__init__.py
-          
+          python3 -c \"
+import re
+
+# 读取文件
+with open('/home/user/.venv/lib/python3.12/site-packages/buildozer/__init__.py', 'r') as f:
+    content = f.read()
+
+# 使用正则表达式替换整个 check_root 方法
+old_pattern = r'    def check_root\\(self\\):.*?(?=    def )'
+new_code = '''    def check_root(self):
+        pass
+
+'''
+
+content = re.sub(old_pattern, new_code, content, flags=re.DOTALL)
+
+# 写入文件
+with open('/home/user/.venv/lib/python3.12/site-packages/buildozer/__init__.py', 'w') as f:
+    f.write(content)
+
+print('Patched check_root method')
+\"
+
           # 运行 buildozer
           buildozer android debug
         "

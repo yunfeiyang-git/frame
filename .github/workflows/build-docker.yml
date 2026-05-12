@@ -17,7 +17,7 @@ jobs:
 
     - name: Build APK with Docker
       run: |
-        docker run --rm -v $(pwd):/home/user/project -e BUILDOZER_ALLOW_ROOT=1 kivy/buildozer:latest /bin/bash -c "cd /home/user/project && buildozer android debug"
+        echo "y" | docker run --rm -i -v $(pwd):/home/user/project kivy/buildozer:latest /bin/bash -c "cd /home/user/project && buildozer android debug"
 
     - name: List files
       run: |

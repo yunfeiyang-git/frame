@@ -16,7 +16,12 @@ jobs:
       uses: actions/checkout@v5
 
     - name: Build APK with Docker
-      run: docker run --rm -v "${{ github.workspace }}":/home/user/project kivy/buildozer:latest buildozer android debug < /dev/null
+      run: |
+        docker run --rm -v "${{ github.workspace }}":/home/user/project kivy/buildozer:latest /bin/bash -c "
+          # 修改 Buildozer 源代码跳过 root 检查
+          sed -i 's/cont = input(\"Are you sure you want to continue \\[y\\/n\\]? \")/cont = \"y\"/' /home/user/.venv/lib/python3.12/site-packages/buildozer/__init__.py
+          buildozer android debug
+        "
 
     - name: List files
       run: |

@@ -43,10 +43,16 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        buildozer -v android debug 2>&1 | tee build.log
+        buildozer -v android debug 2>&1 | tee build.log || true
 
-    - name: Upload build log if failed
-      if: failure()
+    - name: List all files
+      run: |
+        echo "=== Current directory ==="
+        ls -la
+        echo "=== Looking for APK files ==="
+        find /home/runner/work -name "*.apk" 2>/dev/null || echo "No APK found"
+
+    - name: Upload build log
       uses: actions/upload-artifact@v4
       with:
         name: build-log
@@ -54,9 +60,10 @@ jobs:
         retention-days: 7
 
     - name: Upload APK artifact
-      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: slideshow-player-apk
-        path: bin/*.apk
+        path: |
+          bin/*.apk
+          /home/runner/work/**/*.apk
         retention-days: 30
